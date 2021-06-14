@@ -1,0 +1,5 @@
+db/dbdata/*
+reverse_proxy/logs/*
+buddha-helix-firebase
+.env
+.DS_Store

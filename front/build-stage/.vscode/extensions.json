@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "donjayamanne.githistory",
+        "eamodio.gitlens",
+        "gruntfuggly.todo-tree",
+	    "dbaeumer.vscode-eslint",
+	    "esbenp.prettier-vscode"
+    ]
+}

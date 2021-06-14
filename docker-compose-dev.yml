@@ -1,0 +1,97 @@
+version: "3"
+services:
+  reverse_proxy:
+    container_name: buddha-helix-reverse-proxy
+    image: nginx:1.19.5-alpine
+    environment:
+      TZ: Asia/Tokyo
+    ports:
+      - "80:80"
+    volumes:
+      - ./reverse_proxy/logs:/var/log/nginx
+      - ./reverse_proxy/conf.d:/etc/nginx/conf.d
+    expose:
+      - "80"
+    command: nginx -g 'daemon off;'
+    depends_on:
+      - api-server
+      - front-production-stage
+    restart: always
+
+  db:
+    container_name: buddha-helix-db
+    image: postgres:11-alpine
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+      - TZ=Asia/Tokyo
+    volumes:
+      - ./db/initdb:/docker-entrypoint-initdb.d
+      - ./db/dbdata:/var/lib/postgresql/data
+    restart: always
+
+  api-server:
+    container_name: buddha-helix-api-server
+    image: node:15.3.0-alpine3.12
+    working_dir: /app
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - API_SERVER_URL=${API_SERVER_URL}
+      - API_SERVER_PORT=${API_SERVER_PORT}
+      - DB_TYPE=${DB_TYPE}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - FIREBASE_CONFIG=${FIREBASE_CONFIG}
+      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
+      - OPEN_WEATHER_MAP_API_KEY=${OPEN_WEATHER_MAP_API_KEY}
+      - TZ=Asia/Tokyo
+    volumes:
+      - ./api-server:/app
+    tty: #-tに対応
+      true
+    stdin_open: #-iに対応
+      true
+    command: >
+      ash -c "
+      npm install;
+      ash;"
+    depends_on:
+      - db
+    restart: always
+
+  front-build-stage:
+    container_name: buddha-helix-front-build
+    image: node:15.3.0-alpine3.12
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - TZ=Asia/Tokyo
+    working_dir: /app
+    volumes:
+      - ./front/build-stage:/app
+    tty: #-tに対応
+      true
+    stdin_open: #-iに対応
+      true
+    command: >
+      ash -c "
+      ash;"
+    restart: always
+
+  front-production-stage:
+    container_name: buddha-helix-front
+    image: nginx:1.19.5-alpine
+    environment:
+      TZ: Asia/Tokyo
+    volumes:
+      - ./front/production-stage/conf.d:/etc/nginx/conf.d
+      - ./front/build-stage/dist:/usr/share/nginx/html
+    command: nginx -g 'daemon off;'
+    depends_on:
+      - front-build-stage
+    restart: always

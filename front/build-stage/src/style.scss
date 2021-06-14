@@ -1,0 +1,244 @@
+// テーマカラー設定
+$theme-colors: (
+  "primary": #004052,
+  "secondary": #839496
+);
+
+// フォント設定
+$font-family-base: "Yu Gothic", "游ゴシック", YuGothic, "游ゴシック体";
+
+// ボタンをhoverしたときの遷移時間
+$btn-transition: color 0s ;
+
+// headerとfooterから線を消す
+$modal-header-border-width: 0px;
+$modal-footer-border-width: 0px;
+
+// Bootstrapを読み込む
+@import "~bootstrap/scss/bootstrap.scss";
+
+// font-awesome で使うディレクトリの場所を指定
+// 最初の~は、Node_modulesのディレクトリを指定するの同じ意味。
+$fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
+
+// font-awesomeを読み込む
+// TODO: 全部のアイコンを取り込む必要は無いので後で必要なものだけ取り込むように修正する
+@import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "~@fortawesome/fontawesome-free/scss/brands.scss";
+
+body {
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    background-image: url("../dist/assets/image/site_bg.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position:center bottom;
+
+    &:after {
+        content: "";
+        background: radial-gradient(68% 50% at 50% 50%, rgba(0,64,82,0.8) 0%, #002636 100%) no-repeat 50% 50% / 100% 100%;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+    }
+}
+
+$main-width: 800px;
+$main-height: 600px;
+$main-ratio: #{$main-width / $main-height} ;
+$aside-width: 350px;
+$info-height: 10vh;
+
+#game-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    justify-content: center;
+    align-items: center;
+}
+
+main {
+    width: $main-width;
+    max-height: $main-height;
+    max-width: $main-width;
+    margin-left: min( #{$aside-width} , max(100vw - #{$main-width + $aside-width} , 0px));
+    margin-bottom: $info-height;
+    z-index: 1;
+}
+
+aside {
+    height: $main-height;
+    width: $aside-width;
+    max-height: $main-height;
+    margin-bottom: $info-height;
+    z-index: 1;
+}
+
+.game-log {
+    border: 1px solid #668891;
+    box-sizing: border-box;
+    color: #859900;
+    background-color: rgba(102, 136, 145, 0.1);
+    overflow: auto;
+    font-family: sans-serif;
+    z-index: 1;
+}
+
+#game-info {
+    @extend .game-log;
+    position: fixed;
+    bottom: 0;
+    text-align: center;
+    height: $info-height;
+    width: 100vw;
+    font-family: sans-serif;
+}
+
+@media (orientation: portrait) and (max-width: #{$main-width + $aside-width} ){
+    #game-container {
+        flex-direction: column-reverse;
+        justify-content: flex-start;
+    }
+
+    main {
+        height: calc(min( #{$main-width} , 100vw) / #{$main-ratio} );
+        width: min( #{$main-width} , 100vw);
+        margin-left: 0;
+        margin-bottom: $info-height;
+    }
+
+    aside {
+        height: min( #{$main-height} * 2 / 3, 30vh);
+        width: min( #{$main-width} , 100vw);
+        margin-bottom: 0;
+    }
+}
+
+// TODO: 画面を小さくして縦を伸ばそうとするとイマイチ
+@media (orientation: landscape) and (max-height: #{$main-height + 50px} ){
+    #game-info {
+        display: none;
+    }
+
+    main {
+        height: 100vh;
+        width: calc(100vh * #{$main-ratio} );
+        margin-left: 0;
+        margin-bottom: 0;
+    }
+
+    aside {
+        height: 100vh;
+        width: min( #{$aside-width} , max(calc(100vw - 100vh * #{$main-ratio} - #{$aside-width} ), 30vw));
+        margin-bottom: 0;
+    }
+}
+
+// モーダルヘッダー
+.modal-header {
+    justify-content: center;
+}
+
+.modal-body {
+    overflow-wrap: break-word;
+}
+
+// ソーシャルログインボタン
+.social-login-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    margin: 5px 0;
+    opacity: 0.85;
+    display: inline-block;
+    font-size: 17px;
+    line-height: 20px;
+    text-decoration: none;
+    text-align: center;
+    font-family: sans-serif;
+
+    &:hover {
+        opacity: 1;
+        color: #4a4a4a;
+    }
+}
+
+@each $color, $value in $theme-colors {
+    .btn-#{$color} {
+        opacity: 0.85;
+        font-family: sans-serif;
+
+        &:hover {
+            opacity: 1;
+            color: #4a4a4a;
+            background-color: $value;
+            border-color: $value;
+        }
+    }
+}
+
+// facebook, twitter, googleボタン
+.fb {
+    background-color: #3B5998;
+    color: white;
+}
+
+.twitter {
+    background-color: #55ACEE;
+    color: white;
+}
+
+.google {
+    background-color: #FFFFFF;
+    color: #6a6a6a;
+    border: solid 1px;
+    border-color: #6a6a6a;
+    box-sizing: border-box;
+
+}
+
+// googleをgoogle色に変える
+.fa-google {
+    background: conic-gradient(from -45deg, #ea4335 110deg, #4285f4 90deg 180deg, #34a853 180deg 270deg, #fbbc05 270deg) 73% 55%/150% 150% no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+// モーダル背景を磨ガラス
+.modal {
+    backdrop-filter: blur(5px);
+}
+
+// クリック時の演出
+.ripple {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: default;
+    position: absolute;
+    z-index: 2;
+    animation-name: pulse;
+    animation-duration: 0.7s;
+    animation-timing-function: ease-out;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0);
+         background: rgba(26, 255, 255, 0);
+    }
+    10% {
+        transform: scale(2);
+         background: rgba(26, 255, 255, 0.7);
+    }
+    100% {
+         transform: scale(5);
+         background: rgba(26, 255, 255, 0);
+    }
+}
